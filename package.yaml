@@ -1,10 +1,10 @@
 name:                activity-graphing
 version:             0.1.0.0
-github:              "githubuser/activity-graphing"
+github:              "tbidne/activity-graphing"
 license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2019 Author name here"
+author:              "Thomas Bidne"
+maintainer:          "tbidne@gmail.com"
+copyright:           "2019 Thomas Bidne"
 
 extra-source-files:
 - README.md
@@ -25,6 +25,8 @@ dependencies:
 library:
   source-dirs: src
   dependencies:
+  - megaparsec
+  - text
   - time
 
 executables:

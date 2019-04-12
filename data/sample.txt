@@ -1,0 +1,4 @@
+# this is a comment
+BenchPress 01-01-1990 60 [60x12, 60x10, 55x9]
+Deadlift 01-02-1995 60 [60x12, 60x10, 55x9]
+BenchPress 07-23-2007 60 [60x12, 60x10, 55x9]
