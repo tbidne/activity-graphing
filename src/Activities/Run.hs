@@ -4,8 +4,8 @@ import Data.Time
 
 data Run = MkRun {
   date :: Day,
-  distance :: Int,
-  time :: Maybe String
+  distance :: Integer,
+  time :: Integer
 } deriving (Eq, Show)
 
 instance Ord Run where

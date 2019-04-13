@@ -22,6 +22,7 @@ import Activities.Activity
 import Activities.Set
 import Activities.BenchPress
 import Activities.Deadlift
+import Activities.Run
 
 type Parser = Parsec Void Text
 type ParseErr = ParseErrorBundle Text Void
@@ -84,12 +85,15 @@ pBenchPress = MkBenchPress <$> pDay <*> pInt <*> pSets <* M.eof
 pDeadlift :: Parser Deadlift
 pDeadlift = MkDeadlift <$> pDay <*> pInt <*> pSets <* M.eof
 
+pRun :: Parser Run
+pRun = MkRun <$> pDay <*> pInt <*> pInt <* M.eof
+
 pActivity :: Parser Activity
 pActivity = pType >>=
   \case
     PBenchPress -> pActHelper pBenchPress ActBP
     PDeadlift -> pActHelper pDeadlift ActD
-    PRun -> undefined -- todo
+    PRun -> pActHelper pRun ActR
 
 pActHelper :: (Parser a) -> (a -> Activity) -> Parser Activity
 pActHelper p actCon = p >>= return . actCon
