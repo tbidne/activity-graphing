@@ -14,15 +14,14 @@ import qualified Data.Time as T (defaultTimeLocale, parseTimeOrError)
 import           Data.Void (Void)
 import           Text.Megaparsec (Parsec, ParseErrorBundle, (<|>), sepBy)
 import           Text.Megaparsec.Error as ME (errorBundlePretty)
-import qualified Text.Megaparsec as M (between, choice, eof, parse, parseTest, some, option, many)
-import qualified Text.Megaparsec.Char as MC (space1, string, char, digitChar, eol, space, newline, crlf)
+import qualified Text.Megaparsec as M (between, choice, eof, parse)
+import qualified Text.Megaparsec.Char as MC (space1, string, char, digitChar)
 import qualified Text.Megaparsec.Char.Lexer as L (space, lexeme, decimal, symbol, skipLineComment, skipBlockComment)
 
 import Activities.Activity
 import Activities.Set
 import Activities.BenchPress
 import Activities.Deadlift
-import Activities.Run
 
 type Parser = Parsec Void Text
 type ParseErr = ParseErrorBundle Text Void
@@ -90,6 +89,7 @@ pActivity = pType >>=
   \case
     PBenchPress -> pActHelper pBenchPress ActBP
     PDeadlift -> pActHelper pDeadlift ActD
+    PRun -> undefined -- todo
 
 pActHelper :: (Parser a) -> (a -> Activity) -> Parser Activity
 pActHelper p actCon = p >>= return . actCon

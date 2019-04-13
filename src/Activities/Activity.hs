@@ -3,7 +3,6 @@
 module Activities.Activity where
 
 import Data.List (sort)
-import Data.Time
 
 import Activities.BenchPress (BenchPress(..))
 import Activities.Deadlift (Deadlift(..))
