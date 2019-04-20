@@ -1,10 +1,10 @@
 module Activities.Run where
 
-import Data.Time
+import Data.Time (Day)
 
 data Run = MkRun {
   date :: Day,
-  distance :: Integer,
+  distance :: Float,
   time :: Integer
 } deriving (Eq, Show)
 

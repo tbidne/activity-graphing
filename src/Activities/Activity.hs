@@ -1,34 +1,38 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Activities.Activity where
+module Activities.Activity
+( Activity(..)
+, ActivityList(..)
+, parseToTypedLists
+)
+where
 
 import Data.List (sort)
 
+import Graphable
 import Activities.BenchPress (BenchPress(..))
+import Activities.BenchPressList (BenchPressList(..))
 import Activities.Deadlift (Deadlift(..))
+import Activities.DeadliftList (DeadliftList(..))
 import Activities.Run (Run(..))
+import Activities.RunList (RunList(..))
 
-data Activity = ActBP BenchPress | ActD Deadlift | ActR Run
+data Activity
+  = ActBP BenchPress
+  | ActD Deadlift
+  | ActR Run
   deriving (Eq, Ord, Show)
 
-class DataPoint a where
-  point :: a -> String
-
-instance DataPoint BenchPress where
-  point MkBenchPress{..} = "BP: " ++ show date
-
-instance DataPoint Deadlift where
-  point MkDeadlift{..} = "D: " ++ show date
-
-instance DataPoint Run where
-  point MkRun{..} = "R: " ++ show date
-
-newtype BPList = MkBPList { bpList :: [BenchPress] } deriving Show
-newtype DList = MkDList { dList :: [Deadlift] } deriving Show
-newtype RList = MkRList { rList :: [Run] } deriving Show
-
-data ActivityList = ActBPList BPList | ActDList DList | ActRList RList
+data ActivityList
+  = ActBPList BenchPressList
+  | ActDList DeadliftList
+  | ActRList RunList
   deriving Show
+
+instance Graph ActivityList where
+  graph (ActBPList a) = graph a
+  graph (ActDList a) = graph a
+  graph (ActRList a) = graph a
 
 filterBenchPress :: [Activity] -> [BenchPress]
 filterBenchPress [] = []

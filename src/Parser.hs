@@ -4,6 +4,7 @@
 module Parser
 ( entry
 , test
+, ParseErr
 ) where
 
 import           Control.Applicative (liftA2)
@@ -16,7 +17,7 @@ import           Text.Megaparsec (Parsec, ParseErrorBundle, (<|>), sepBy)
 import           Text.Megaparsec.Error as ME (errorBundlePretty)
 import qualified Text.Megaparsec as M (between, choice, eof, parse)
 import qualified Text.Megaparsec.Char as MC (space1, string, char, digitChar)
-import qualified Text.Megaparsec.Char.Lexer as L (space, lexeme, decimal, symbol, skipLineComment, skipBlockComment)
+import qualified Text.Megaparsec.Char.Lexer as L (space, lexeme, decimal, float, symbol, skipLineComment, skipBlockComment)
 
 import Activities.Activity
 import Activities.Set
@@ -78,6 +79,9 @@ pSet = MkSet <$> pInt <* MC.string "x" <*> pInt
 pSets :: Parser [Set]
 pSets = pList pSet
 
+pFloat :: Parser Float
+pFloat = lexeme L.float
+
 -- 4. All together now
 pBenchPress :: Parser BenchPress
 pBenchPress = MkBenchPress <$> pDay <*> pInt <*> pSets <* M.eof
@@ -86,20 +90,17 @@ pDeadlift :: Parser Deadlift
 pDeadlift = MkDeadlift <$> pDay <*> pInt <*> pSets <* M.eof
 
 pRun :: Parser Run
-pRun = MkRun <$> pDay <*> pInt <*> pInt <* M.eof
+pRun = MkRun <$> pDay <*> pFloat <*> pInt <* M.eof
 
 pActivity :: Parser Activity
 pActivity = pType >>=
   \case
-    PBenchPress -> pActHelper pBenchPress ActBP
-    PDeadlift -> pActHelper pDeadlift ActD
-    PRun -> pActHelper pRun ActR
+    PBenchPress -> fmap ActBP pBenchPress
+    PDeadlift -> fmap ActD pDeadlift
+    PRun -> fmap ActR pRun
 
-pActHelper :: (Parser a) -> (a -> Activity) -> Parser Activity
-pActHelper p actCon = p >>= return . actCon
-
-entry :: String -> [Either ParseErr Activity]
-entry = parsing . Txt.lines . Txt.pack
+entry :: String -> Either ParseErr [Activity]
+entry = sequence . parsing . Txt.lines . Txt.pack
 
 parsing :: [Text] -> [Either ParseErr Activity]
 parsing = fmap (\s -> M.parse pActivity "" s) . filter (not . skip)

@@ -1,6 +1,6 @@
 module Activities.Deadlift where
 
-import Data.Time
+import Data.Time (Day)
 import Activities.Set
 
 data Deadlift = MkDeadlift {

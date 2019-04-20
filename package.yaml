@@ -25,6 +25,8 @@ dependencies:
 library:
   source-dirs: src
   dependencies:
+  - Chart
+  - Chart-cairo
   - megaparsec
   - text
   - time
@@ -38,6 +40,9 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - Chart
+    - Chart-cairo
+    - megaparsec
     - graphing
 
 tests:

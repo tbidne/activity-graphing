@@ -1,6 +1,6 @@
 module Activities.BenchPress where
 
-import Data.Time
+import Data.Time (Day)
 import Activities.Set
 
 data BenchPress = MkBenchPress {
