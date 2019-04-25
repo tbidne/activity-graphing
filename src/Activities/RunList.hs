@@ -9,7 +9,7 @@ import Data.Time.Calendar (Day)
 import Activities.Run
 import Graphable
 
-newtype RunList = MkRList { unList :: [Run] } deriving Show
+newtype RunList = MkRunList { unList :: [Run] } deriving Show
 
 instance Graph RunList where
   graph r =
@@ -17,7 +17,7 @@ instance Graph RunList where
     *> graphHelper r "Run Time" byTime
 
 graphHelper :: PlotValue a => RunList -> String -> (Run -> (Day, a)) -> IO ()
-graphHelper MkRList{..} title f = toFile def ( "data/" ++ title ++ ".png") $ do
+graphHelper MkRunList{..} title f = toFile def ( "data/" ++ title ++ ".png") $ do
   layout_title .= title
   plot (line "" [(fmap f unList)])
 

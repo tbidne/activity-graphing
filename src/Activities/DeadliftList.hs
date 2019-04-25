@@ -6,7 +6,7 @@ import Activities.Deadlift
 import Activities.Weights
 import Graphable
 
-newtype DeadliftList = MkDList { unList :: [Deadlift] } deriving Show
+newtype DeadliftList = MkDeadliftList { unList :: [Deadlift] } deriving Show
 
 instance Graph DeadliftList where
-  graph MkDList{..} = graphMax date sets unList "Deadlift Max"
+  graph MkDeadliftList{..} = graphMax date sets unList "Deadlift Max"

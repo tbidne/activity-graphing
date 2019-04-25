@@ -95,9 +95,9 @@ pRun = MkRun <$> pDay <*> pFloat <*> pInt <* M.eof
 pActivity :: Parser Activity
 pActivity = pType >>=
   \case
-    PBenchPress -> fmap ActBP pBenchPress
-    PDeadlift -> fmap ActD pDeadlift
-    PRun -> fmap ActR pRun
+    PBenchPress -> fmap ActBenchPress pBenchPress
+    PDeadlift -> fmap ActDeadlift pDeadlift
+    PRun -> fmap ActRun pRun
 
 entry :: String -> Either ParseErr [Activity]
 entry = sequence . parsing . Txt.lines . Txt.pack

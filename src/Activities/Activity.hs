@@ -1,5 +1,3 @@
-{-# LANGUAGE RecordWildCards #-}
-
 module Activities.Activity
 ( Activity(..)
 , ActivityList(..)
@@ -18,48 +16,54 @@ import Activities.Run (Run(..))
 import Activities.RunList (RunList(..))
 
 data Activity
-  = ActBP BenchPress
-  | ActD Deadlift
-  | ActR Run
+  = ActBenchPress BenchPress
+  | ActDeadlift Deadlift
+  | ActRun Run
   deriving (Eq, Ord, Show)
 
 data ActivityList
-  = ActBPList BenchPressList
-  | ActDList DeadliftList
-  | ActRList RunList
+  = ActBenchPressList BenchPressList
+  | ActDeadliftList DeadliftList
+  | ActRunList RunList
   deriving Show
 
 instance Graph ActivityList where
-  graph (ActBPList a) = graph a
-  graph (ActDList a) = graph a
-  graph (ActRList a) = graph a
+  graph (ActBenchPressList a) = graph a
+  graph (ActDeadliftList a) = graph a
+  graph (ActRunList a) = graph a
 
 filterBenchPress :: [Activity] -> [BenchPress]
-filterBenchPress [] = []
-filterBenchPress ((ActBP x) : xs) = x : filterBenchPress xs
-filterBenchPress (_:xs) = filterBenchPress xs
+filterBenchPress = foldr f []
+  where f (ActBenchPress x) xs = x : xs
+        f _ xs = xs
 
 filterDeadlift :: [Activity] -> [Deadlift]
-filterDeadlift [] = []
-filterDeadlift ((ActD x) : xs) = x : filterDeadlift xs
-filterDeadlift (_:xs) = filterDeadlift xs
+filterDeadlift = foldr f []
+  where f (ActDeadlift x) xs = x : xs
+        f _ xs = xs
 
 filterRun :: [Activity] -> [Run]
-filterRun [] = []
-filterRun ((ActR x) : xs) = x : filterRun xs
-filterRun (_:xs) = filterRun xs
+filterRun = foldr f []
+  where f (ActRun x) xs = x : xs
+        f _ xs = xs
 
-toBPActList :: [Activity] -> ActivityList
-toBPActList = ActBPList . MkBPList . sort . filterBenchPress
+sortedFilter :: Ord b => (a -> ActivityList) -> ([b] -> a) -> ([Activity] -> [b]) -> [Activity] -> ActivityList
+sortedFilter toActList toTypeList filter' = toActList . toTypeList . sort . filter'
 
-toDActList :: [Activity] -> ActivityList
-toDActList = ActDList . MkDList . sort . filterDeadlift
+toBenchPressActList :: [Activity] -> ActivityList
+toBenchPressActList = sortedFilter ActBenchPressList MkBenchPressList filterBenchPress
 
-toRActList :: [Activity] -> ActivityList
-toRActList = ActRList . MkRList . sort . filterRun
+toDeadliftActList :: [Activity] -> ActivityList
+toDeadliftActList = sortedFilter ActDeadliftList MkDeadliftList filterDeadlift
+
+toRunActList :: [Activity] -> ActivityList
+toRunActList = sortedFilter ActRunList MkRunList filterRun
 
 allFilters :: [[Activity] -> ActivityList]
-allFilters = [toBPActList, toDActList, toRActList]
+allFilters =
+  [ toBenchPressActList
+  , toDeadliftActList
+  , toRunActList ]
 
 parseToTypedLists :: [Activity] -> [ActivityList]
 parseToTypedLists as = [f as | f <- allFilters]

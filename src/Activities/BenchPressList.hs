@@ -6,7 +6,7 @@ import Activities.BenchPress
 import Activities.Weights
 import Graphable
 
-newtype BenchPressList = MkBPList { unList :: [BenchPress] } deriving Show
+newtype BenchPressList = MkBenchPressList { unList :: [BenchPress] } deriving Show
 
 instance Graph BenchPressList where
-  graph MkBPList{..} = graphVolume date sets unList "Benchpress Volume"
+  graph MkBenchPressList{..} = graphVolume date sets unList "Benchpress Volume"
