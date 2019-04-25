@@ -8,15 +8,10 @@ import Data.Time.Calendar (Day)
 
 import Activities.Deadlift
 import Activities.Set
+import Activities.Weights
 import Graphable
 
 newtype DeadliftList = MkDList { unList :: [Deadlift] } deriving Show
 
 instance Graph DeadliftList where
-    graph MkDList{..} = toFile def "data/Deadlift.png" $ do
-      layout_title .= "Deadlift"
-      plot (line "" [(fmap volume unList)])
-
-volume :: Deadlift -> (Day, Integer)
-volume MkDeadlift{..} = (date, foldr (\s i -> f s + i) 0 sets)
-  where f MkSet{..} = weight * reps
+  graph MkDList{..} = graphMax date sets unList "Deadlift Max"

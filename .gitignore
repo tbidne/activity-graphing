@@ -1,3 +1,5 @@
 .stack-work/
 graphing.cabal
+data/*
+clean.sh
 *~
