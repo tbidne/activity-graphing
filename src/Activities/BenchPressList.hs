@@ -2,12 +2,7 @@
 
 module Activities.BenchPressList where
 
-import Graphics.Rendering.Chart.Easy ((.=), def, layout_title, plot, line)
-import Graphics.Rendering.Chart.Backend.Cairo (toFile)
-import Data.Time.Calendar (Day)
-
 import Activities.BenchPress
-import Activities.Set
 import Activities.Weights
 import Graphable
 

@@ -7,11 +7,11 @@ module Activities.Weights
 where
 
 import Prelude hiding (max)
-import Graphics.Rendering.Chart.Easy ((.=), def, layout_title, plot, line, PlotValue)
+import Graphics.Rendering.Chart.Easy ((.=), def, layout_title, plot, line)
 import Graphics.Rendering.Chart.Backend.Cairo (toFile)
 import Data.Time.Calendar (Day)
 
-import Activities.Set
+import Activities.Set (Set(..))
 
 graphVolume :: (a -> Day) -> (a -> [Set]) -> [a] -> String -> IO ()
 graphVolume = graphHelper volume
