@@ -7,7 +7,7 @@ module Activities.Weights
 where
 
 import Prelude hiding (max)
-import Graphics.Rendering.Chart.Easy ((.=), def, layout_title, plot, line)
+import Graphics.Rendering.Chart.Easy
 import Graphics.Rendering.Chart.Backend.Cairo (toFile)
 import Data.Time.Calendar (Day)
 
@@ -27,7 +27,9 @@ graphHelper :: ((a -> Day) -> (a -> [Set]) -> a -> (Day, Integer))
             -> IO ()
 graphHelper metric dateFn setsFn act title = toFile def ( "data/" ++ title ++ ".png") $ do
   layout_title .= title
+  setColors [opaque blue, opaque red]
   plot (line "Kilograms" [(fmap (metric dateFn setsFn) act)])
+  plot (points "Days" (fmap (metric dateFn setsFn) act))
 
 volume :: (a -> Day) -> (a -> [Set]) -> a -> (Day, Integer)
 volume dateFn setsFn a = (dateFn a, sumSets a)

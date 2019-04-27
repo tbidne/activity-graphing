@@ -2,7 +2,7 @@
 
 module Activities.RunList where
 
-import Graphics.Rendering.Chart.Easy ((.=), def, layout_title, plot, line, PlotValue)
+import Graphics.Rendering.Chart.Easy
 import Graphics.Rendering.Chart.Backend.Cairo (toFile)
 import Data.Time.Calendar (Day)
 
@@ -18,9 +18,11 @@ instance Graph RunList where
     *> graphHelper r "Run Pace" "Minutes / Kilometer" byPace
 
 graphHelper :: PlotValue a => RunList -> String -> String -> (Run -> (Day, a)) -> IO ()
-graphHelper MkRunList{..} title label f = toFile def ( "data/" ++ title ++ ".png") $ do
+graphHelper MkRunList{..} title legend f = toFile def ( "data/" ++ title ++ ".png") $ do
   layout_title .= title
-  plot (line label [(fmap f unList)])
+  setColors [opaque blue, opaque red]
+  plot (line legend [(fmap f unList)])
+  plot (points "Days" (fmap f unList))
 
 byDist :: Run -> (Day, Float)
 byDist MkRun{..} = (date, distance)
