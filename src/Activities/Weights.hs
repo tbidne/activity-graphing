@@ -27,7 +27,7 @@ graphHelper :: ((a -> Day) -> (a -> [Set]) -> a -> (Day, Integer))
             -> IO ()
 graphHelper metric dateFn setsFn act title = toFile def ( "data/" ++ title ++ ".png") $ do
   layout_title .= title
-  plot (line "" [(fmap (metric dateFn setsFn) act)])
+  plot (line "Kilograms" [(fmap (metric dateFn setsFn) act)])
 
 volume :: (a -> Day) -> (a -> [Set]) -> a -> (Day, Integer)
 volume dateFn setsFn a = (dateFn a, sumSets a)

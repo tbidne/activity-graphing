@@ -23,7 +23,7 @@ import Activities.Activity
 import Activities.Set
 import Activities.BenchPress
 import Activities.Deadlift
-import Activities.Run
+import Activities.Run (Run(..), Time(..))
 
 type Parser = Parsec Void Text
 type ParseErr = ParseErrorBundle Text Void
@@ -58,8 +58,18 @@ pType = M.choice
 pDateSep :: Parser Text
 pDateSep = fmap Txt.singleton $ MC.char '-' <|> MC.char '/'
 
+pColon :: Parser Text
+pColon = fmap Txt.singleton $ MC.char ':'
+
+pTime :: Parser Time
+pTime = lexeme $ MkTime <$> pNum2I <* pColon <*> pNum2I <* pColon <*> pNum2I
+
 pNum2 :: Parser Text
 pNum2 = liftA2 (\a -> Txt.cons a . Txt.singleton) MC.digitChar MC.digitChar
+
+pNum2I :: Parser Integer
+pNum2I = convert <$> pNum2
+  where convert = read . Txt.unpack
 
 pNum4 :: Parser Text
 pNum4 = liftA2 Txt.append pNum2 pNum2
@@ -90,7 +100,7 @@ pDeadlift :: Parser Deadlift
 pDeadlift = MkDeadlift <$> pDay <*> pInt <*> pSets <* M.eof
 
 pRun :: Parser Run
-pRun = MkRun <$> pDay <*> pFloat <*> pInt <* M.eof
+pRun = MkRun <$> pDay <*> pFloat <*> pTime <* M.eof
 
 pActivity :: Parser Activity
 pActivity = pType >>=
