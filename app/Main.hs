@@ -8,9 +8,7 @@ import Text.Megaparsec.Error as ME (errorBundlePretty)
 import Graphable
 
 main :: IO ()
-main = do
-  str <- readFile "data/sample.txt"
-  graphOrDie $ P.entry str
+main = readFile "data/sample.txt" >>= graphOrDie . P.entry
 
 graphOrDie :: Either P.ParseErr [A.Activity] -> IO ()
 graphOrDie (Left l) = putStrLn $ ME.errorBundlePretty l

@@ -113,7 +113,7 @@ entry :: String -> Either ParseErr [Activity]
 entry = sequence . parsing . Txt.lines . Txt.pack
 
 parsing :: [Text] -> [Either ParseErr Activity]
-parsing = fmap (\s -> M.parse pActivity "" s) . filter (not . skip)
+parsing = fmap (M.parse pActivity "") . filter (not . skip)
   where skip s = s `elem` ["", "\n"] || "#" `Txt.isPrefixOf` s
 
 test :: Either ParseErr Activity -> String
