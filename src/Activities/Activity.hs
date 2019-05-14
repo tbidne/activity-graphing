@@ -8,12 +8,9 @@ where
 import Data.List (sort)
 
 import Graphable
-import Activities.BenchPress (BenchPress(..))
-import Activities.BenchPressList (BenchPressList(..))
-import Activities.Deadlift (Deadlift(..))
-import Activities.DeadliftList (DeadliftList(..))
-import Activities.Run (Run(..))
-import Activities.RunList (RunList(..))
+import Activities.BenchPress (BenchPress(..), BenchPressList(..))
+import Activities.Deadlift (Deadlift(..), DeadliftList(..))
+import Activities.Run (Run(..), RunList(..))
 
 data Activity
   = ActBenchPress BenchPress
@@ -47,17 +44,17 @@ filterRun = foldr f []
   where f (ActRun x) xs = x : xs
         f _ xs = xs
 
-sortedFilter :: Ord b => (a -> ActivityList) -> ([b] -> a) -> ([Activity] -> [b]) -> [Activity] -> ActivityList
-sortedFilter toActList toTypeList filter' = toActList . toTypeList . sort . filter'
+sortedFilter :: Ord b => ([b] -> ActivityList) -> ([Activity] -> [b]) -> [Activity] -> ActivityList
+sortedFilter toActList filter' = toActList . sort . filter'
 
 toBenchPressActList :: [Activity] -> ActivityList
-toBenchPressActList = sortedFilter ActBenchPressList MkBenchPressList filterBenchPress
+toBenchPressActList = sortedFilter (ActBenchPressList . MkBenchPressList) filterBenchPress
 
 toDeadliftActList :: [Activity] -> ActivityList
-toDeadliftActList = sortedFilter ActDeadliftList MkDeadliftList filterDeadlift
+toDeadliftActList = sortedFilter (ActDeadliftList . MkDeadliftList) filterDeadlift
 
 toRunActList :: [Activity] -> ActivityList
-toRunActList = sortedFilter ActRunList MkRunList filterRun
+toRunActList = sortedFilter (ActRunList . MkRunList) filterRun
 
 allFilters :: [[Activity] -> ActivityList]
 allFilters =
