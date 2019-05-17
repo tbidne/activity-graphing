@@ -1,8 +1,11 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Activities.Run where
+module Activities.Run
+( Run(..)
+, RunList(..)
+, Time(..)
+) where
 
---import Data.Time (Day)
 import Graphics.Rendering.Chart.Easy
 import Graphics.Rendering.Chart.Backend.Cairo (toFile)
 import Data.Time.Calendar (Day)
@@ -46,9 +49,6 @@ byTime MkRun{..} = (date, toMinutes time)
 
 byPace :: Run -> (Day, Float)
 byPace MkRun{..} = (date, (toMinutes time) / distance)
-
-toSeconds :: Time -> Integer
-toSeconds MkTime{..} = (hours * 3600) + (minutes * 60) + seconds
 
 toMinutes :: Time -> Float
 toMinutes MkTime{..} = h * 60 + m + s / 60.0
