@@ -1,17 +1,49 @@
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Activities.Weights
-( graphVolume
-, graphMax
-)
-where
+( Weight(..)
+, WeightList(..)
+, WeightType(..)
+, graph
+, Set(..)
+) where
 
 import Prelude hiding (max)
-import Graphics.Rendering.Chart.Easy
+import Graphics.Rendering.Chart.Easy hiding (sets)
 import Graphics.Rendering.Chart.Backend.Cairo (toFile)
 import Data.Time.Calendar (Day)
 
-import Activities.Set (Set(..))
+import Graphable
+
+data Set = MkSet {
+  weight :: Integer,
+  reps :: Integer
+} deriving (Eq, Show)
+
+data WeightType
+  = BenchPress
+  | Deadlift
+
+data Weight (a :: WeightType) = MkWeight {
+  date :: Day,
+  duration :: Integer,
+  sets :: [Set]
+} deriving (Eq, Show)
+
+instance Ord (Weight a) where
+  b <= c = date b <= date c
+
+newtype WeightList (a :: WeightType) = MkWeightList { unList :: [Weight a] } deriving Show
+
+instance Graph (WeightList 'BenchPress) where
+  graph MkWeightList{..} = graphVolume date sets unList "BenchPress volume"
+
+instance Graph (WeightList 'Deadlift) where
+  graph MkWeightList{..} = graphMax date sets unList "Deadlift max"
 
 graphVolume :: (a -> Day) -> (a -> [Set]) -> [a] -> String -> IO ()
 graphVolume = graphHelper volume
@@ -19,12 +51,13 @@ graphVolume = graphHelper volume
 graphMax :: (a -> Day) -> (a -> [Set]) -> [a] -> String -> IO ()
 graphMax = graphHelper max
 
-graphHelper :: ((a -> Day) -> (a -> [Set]) -> a -> (Day, Integer))
-            -> (a -> Day)
-            -> (a -> [Set])
-            -> [a]
-            -> String
-            -> IO ()
+graphHelper
+  :: ((a -> Day) -> (a -> [Set]) -> a -> (Day, Integer))
+  -> (a -> Day)
+  -> (a -> [Set])
+  -> [a]
+  -> String
+  -> IO ()
 graphHelper metric dateFn setsFn act title = toFile def ( "data/" ++ title ++ ".png") $ do
   layout_title .= title
   setColors [opaque blue, opaque red]

@@ -1,3 +1,6 @@
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE ExplicitForAll #-}
+{-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -20,10 +23,8 @@ import qualified Text.Megaparsec.Char as MC (space1, string, char, digitChar)
 import qualified Text.Megaparsec.Char.Lexer as L (space, lexeme, decimal, float, symbol, skipLineComment, skipBlockComment)
 
 import Activities.Activity
-import Activities.Set
-import Activities.BenchPress
-import Activities.Deadlift
-import Activities.Run (Run(..), Time(..))
+import Activities.Run
+import Activities.Weights
 
 type Parser = Parsec Void Text
 type ParseErr = ParseErrorBundle Text Void
@@ -93,11 +94,14 @@ pFloat :: Parser Float
 pFloat = lexeme L.float
 
 -- 4. All together now
-pBenchPress :: Parser BenchPress
-pBenchPress = MkBenchPress <$> pDay <*> pInt <*> pSets <* M.eof
+pWeight :: forall (a :: WeightType). Parser (Weight a)
+pWeight = MkWeight <$> pDay <*> pInt <*> pSets <* M.eof
 
-pDeadlift :: Parser Deadlift
-pDeadlift = MkDeadlift <$> pDay <*> pInt <*> pSets <* M.eof
+pBenchPress :: Parser (Weight 'BenchPress)
+pBenchPress = pWeight
+
+pDeadlift :: Parser (Weight 'Deadlift)
+pDeadlift = pWeight
 
 pRun :: Parser Run
 pRun = MkRun <$> pDay <*> pFloat <*> pTime <* M.eof
