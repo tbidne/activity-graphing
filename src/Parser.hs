@@ -31,7 +31,17 @@ type ParseErr = ParseErrorBundle Text Void
 
 data ParseType
   = PBenchPress
+  | PCableCrossover
+  | PCableRow
   | PDeadlift
+  | PLandmine180
+  | PLateralRaise
+  | PLegCurl
+  | PLegPress
+  | PPallofPress
+  | PPullUp
+  | PShoulderPress
+  | PShrug
   | PRun
   deriving (Show, Eq)
 
@@ -52,7 +62,17 @@ pList p = M.between (L.symbol sc "[") (L.symbol sc "]") $ (p <* sc) `sepBy` (MC.
 pType :: Parser ParseType
 pType = M.choice
   [ lexeme $ PBenchPress <$ MC.string "BenchPress"
-  , lexeme $  PDeadlift <$ MC.string "Deadlift"
+  , lexeme $ PCableCrossover <$ MC.string "CableCrossover"
+  , lexeme $ PCableRow <$ MC.string "CableRow"
+  , lexeme $ PDeadlift <$ MC.string "Deadlift"
+  , lexeme $ PLandmine180 <$ MC.string "Landmine180"
+  , lexeme $ PLateralRaise <$ MC.string "LateralRaise"
+  , lexeme $ PLegCurl <$ MC.string "LegCurl"
+  , lexeme $ PLegPress <$ MC.string "LegPress"
+  , lexeme $ PPallofPress <$ MC.string "PallofPress"
+  , lexeme $ PPullUp <$ MC.string "PullUp"
+  , lexeme $ PShoulderPress <$ MC.string "ShoulderPress"
+  , lexeme $ PShrug <$ MC.string "Shrug"
   , lexeme $ PRun <$ MC.string "Run" ]
 
 -- 2. Date
@@ -100,8 +120,38 @@ pWeight = MkWeight <$> pDay <*> pInt <*> pSets <* M.eof
 pBenchPress :: Parser (Weight 'BenchPress)
 pBenchPress = pWeight
 
+pCableCrossover :: Parser (Weight 'CableCrossover)
+pCableCrossover = pWeight
+
+pCableRow :: Parser (Weight 'CableRow)
+pCableRow = pWeight
+
 pDeadlift :: Parser (Weight 'Deadlift)
 pDeadlift = pWeight
+
+pLandmine180 :: Parser (Weight 'Landmine180)
+pLandmine180 = pWeight
+
+pLateralRaise :: Parser (Weight 'LateralRaise)
+pLateralRaise = pWeight
+
+pLegCurl :: Parser (Weight 'LegCurl)
+pLegCurl = pWeight
+
+pLegPress :: Parser (Weight 'LegPress)
+pLegPress = pWeight
+
+pPallofPress :: Parser (Weight 'PallofPress)
+pPallofPress = pWeight
+
+pPullUp :: Parser (Weight 'PullUp)
+pPullUp = pWeight
+
+pShoulderPress :: Parser (Weight 'ShoulderPress)
+pShoulderPress = pWeight
+
+pShrug :: Parser (Weight 'Shrug)
+pShrug = pWeight
 
 pRun :: Parser Run
 pRun = MkRun <$> pDay <*> pFloat <*> pTime <* M.eof
@@ -110,7 +160,17 @@ pActivity :: Parser Activity
 pActivity = pType >>=
   \case
     PBenchPress -> fmap ActBenchPress pBenchPress
+    PCableCrossover -> fmap ActCableCrossover pCableCrossover
+    PCableRow -> fmap ActCableRow pCableRow
     PDeadlift -> fmap ActDeadlift pDeadlift
+    PLandmine180 -> fmap ActLandmine180 pLandmine180
+    PLateralRaise -> fmap ActLateralRaise pLateralRaise
+    PLegCurl -> fmap ActLegCurl pLegCurl
+    PLegPress -> fmap ActLegPress pLegPress
+    PPallofPress -> fmap ActPallofPress pPallofPress
+    PPullUp -> fmap ActPullUp pPullUp
+    PShoulderPress -> fmap ActShoulderPress pShoulderPress
+    PShrug -> fmap ActShrug pShrug
     PRun -> fmap ActRun pRun
 
 entry :: String -> Either ParseErr [Activity]
