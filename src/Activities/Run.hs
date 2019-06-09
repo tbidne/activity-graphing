@@ -1,3 +1,4 @@
+{-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Activities.Run
@@ -9,7 +10,10 @@ module Activities.Run
 import Graphics.Rendering.Chart.Easy
 import Graphics.Rendering.Chart.Backend.Cairo (toFile)
 import Data.Time.Calendar (Day)
+import Control.Monad.Trans.Writer.Lazy
+
 import Graphable
+import App
 
 data Time = MkTime {
   hours :: Integer,
@@ -29,10 +33,11 @@ instance Ord Run where
 newtype RunList = MkRunList { unList :: [Run] } deriving Show
 
 instance Graph RunList where
-  graph r =
+  graph r = App $ WriterT $ do
     graphHelper r "Run Distance" "Kilometers" byDist
-    *> graphHelper r "Run Time" "Minutes" byTime
-    *> graphHelper r "Run Pace" "Minutes / Kilometer" byPace
+    graphHelper r "Run Time" "Minutes" byTime
+    graphHelper r "Run Pace" "Minutes / Kilometer" byPace
+    return ((), "Graphing runs")
 
 graphHelper :: PlotValue a => RunList -> String -> String -> (Run -> (Day, a)) -> IO ()
 graphHelper MkRunList{..} title legend f = toFile def ( "data/" ++ title ++ ".png") $ do

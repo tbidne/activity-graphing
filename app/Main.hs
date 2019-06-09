@@ -4,10 +4,12 @@ module Main where
 
 import System.Environment (getArgs)
 import Text.Megaparsec.Error as ME (errorBundlePretty)
-
+import Control.Monad.Trans.Writer.Lazy
 import Parser
+
 import Activities.Activity
 import Graphable
+import App
 
 main :: IO ()
 main = parseFileName >>= inHelper
@@ -27,4 +29,9 @@ inHelper =
 
 graphOrDie :: Either ParseErr [Activity] -> IO ()
 graphOrDie (Left l) = putStrLn $ ME.errorBundlePretty l
-graphOrDie (Right xs) = sequence_ $ fmap graph $ parseToTypedLists xs
+graphOrDie (Right xs) = listsToIO xs
+  where actToIO = printLogs . runWriterT . runApp . graph
+        listsToIO = sequence_ . fmap actToIO . parseToTypedLists
+
+printLogs :: IO ((), String) -> IO ()
+printLogs s = putStrLn . snd =<< s

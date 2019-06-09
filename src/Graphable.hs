@@ -1,4 +1,6 @@
 module Graphable where
 
+import App
+
 class Graph a where
-  graph :: a -> IO ()
+  graph :: a -> App

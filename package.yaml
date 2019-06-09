@@ -30,6 +30,7 @@ library:
   - megaparsec
   - text
   - time
+  - transformers
 
 executables:
   graphing-exe:
@@ -44,6 +45,7 @@ executables:
     - Chart-cairo
     - megaparsec
     - graphing
+    - transformers
 
 tests:
   graphing-test:

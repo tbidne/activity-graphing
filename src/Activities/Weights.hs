@@ -15,7 +15,9 @@ import Prelude hiding (max)
 import Graphics.Rendering.Chart.Easy hiding (sets)
 import Graphics.Rendering.Chart.Backend.Cairo (toFile)
 import Data.Time.Calendar (Day)
+import Control.Monad.Trans.Writer.Lazy
 
+import App
 import Graphable
 
 data Set = MkSet {
@@ -49,40 +51,47 @@ instance Ord (Weight a) where
 newtype WeightList (a :: WeightType) = MkWeightList { unList :: [Weight a] } deriving Show
 
 instance Graph (WeightList 'BenchPress) where
-  graph MkWeightList{..} = graphVolume unList "BenchPress Volume"
+  graph MkWeightList{..} = graphToApp graphVolume unList "BenchPress Volume"
 
 instance Graph (WeightList 'CableCrossover) where
-  graph MkWeightList{..} = graphVolume unList "Cable Crossover Volume"
+  graph MkWeightList{..} = graphToApp graphVolume unList "Cable Crossover Volume"
 
 instance Graph (WeightList 'CableRow) where
-  graph MkWeightList{..} = graphVolume unList "Cable Row Volume"
+  graph MkWeightList{..} = graphToApp graphVolume unList "Cable Row Volume"
 
 instance Graph (WeightList 'Deadlift) where
-  graph MkWeightList{..} = graphMax unList "Deadlift Max"
+  graph MkWeightList{..} = graphToApp graphMax unList "Deadlift Max"
 
 instance Graph (WeightList 'Landmine180) where
-  graph MkWeightList{..} = graphVolume unList "Landmine 180 Volume"
+  graph MkWeightList{..} = graphToApp graphVolume unList "Landmine 180 Volume"
 
 instance Graph (WeightList 'LateralRaise) where
-  graph MkWeightList{..} = graphVolume unList "Lateral Raise Volume"
+  graph MkWeightList{..} = graphToApp graphVolume unList "Lateral Raise Volume"
 
 instance Graph (WeightList 'LegCurl) where
-  graph MkWeightList{..} = graphVolume unList "Leg Curl Volume"
+  graph MkWeightList{..} = graphToApp graphVolume unList "Leg Curl Volume"
 
 instance Graph (WeightList 'LegPress) where
-  graph MkWeightList{..} = graphVolume unList "Leg Press Volume"
+  graph MkWeightList{..} = graphToApp graphVolume unList "Leg Press Volume"
 
 instance Graph (WeightList 'PallofPress) where
-  graph MkWeightList{..} = graphVolume unList "Pallof Press Volume"
+  graph MkWeightList{..} = graphToApp graphVolume unList "Pallof Press Volume"
 
 instance Graph (WeightList 'PullUp) where
-  graph MkWeightList{..} = graphTotalReps unList "Pull Up Volume"
+  graph MkWeightList{..} = graphToApp graphTotalReps unList "Pull Up Reps"
 
 instance Graph (WeightList 'ShoulderPress) where
-  graph MkWeightList{..} = graphVolume unList "Shoulder Press Volume"
+  graph MkWeightList{..} = graphToApp graphVolume unList "Shoulder Press Volume"
 
 instance Graph (WeightList 'Shrug) where
-  graph MkWeightList{..} = graphMax unList "Shrug Volume"
+  graph MkWeightList{..} = graphToApp graphMax unList "Shoulder Shrug Max"
+
+graphToApp :: ([a] -> String -> IO ()) -> [a] -> String -> App
+graphToApp _ [] s = App $ WriterT $ do
+  return ((), "No data for " ++ s)
+graphToApp f g s = App $ WriterT $ do
+  f g s
+  return ((), "Graphing " ++ s)
 
 graphVolume :: [Weight a] -> String -> IO ()
 graphVolume = graphHelper volume
@@ -94,7 +103,6 @@ graphTotalReps :: [Weight a] -> String -> IO ()
 graphTotalReps = graphHelper totalReps
 
 graphHelper :: (Weight a -> (Day, Integer)) -> [Weight a] -> String -> IO ()
-graphHelper _ [] title = putStrLn $ "no data for " ++ title
 graphHelper metric as title = toFile def ( "data/" ++ title ++ ".png") $ do
   layout_title .= title
   setColors [opaque blue, opaque red]
